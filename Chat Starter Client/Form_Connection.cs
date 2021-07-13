@@ -17,10 +17,13 @@ namespace ChatStarterClient
         {
             InitializeComponent();
             _originalHeight = Height;
-            GenerateLocalIPAdress();
+            GenerateLocalIPAddress(chooseLocalIPAddress: true);
+            GenerateRemoteIPAddress();
+            GenerateUserName();
             HideAdvancedSettings();
         }
 
+        #region Common Methods
         private void SetStatus(Status status)
         {
             switch (status)
@@ -31,6 +34,7 @@ namespace ChatStarterClient
                     button_connect.Enabled = true;
                     groupBox_localEndPoint.Enabled = true;
                     groupBox_remoteEndPoint.Enabled = true;
+                    textBox_userName.Focus();
                     break;
                 case Status.Connecting:
                     Cursor = Cursors.AppStarting;
@@ -44,28 +48,14 @@ namespace ChatStarterClient
             }
         }
 
-        private void GenerateLocalIPAdress()
+        private void SetError(Control control = null, string text = null)
         {
-            Random random = new Random();
-            Func<int> getRandom = () => random.Next(1, 255);
-            string localIPAdressString = string.Format("127.{0}.{1}.{2}",
-                getRandom(), getRandom(), getRandom());
-            textBox_localIPAddress.Text = localIPAdressString;
-        }
-
-        private bool TryParsePort(string portString, out int port)
-        {
-            try
+            if (control == null && text == null)
             {
-                port = int.Parse(portString);
-                if (port < 0 || port > 65535) throw new Exception();
+                errorProvider_main.Clear();
+                return;
             }
-            catch
-            {
-                port = -1;
-                return false;
-            }
-            return true;
+            errorProvider_main.SetError(control, text);
         }
 
         private void ToggleAdvancedSettings()
@@ -95,6 +85,32 @@ namespace ChatStarterClient
             _advancedSettingsVisible = false;
         }
 
+        private void GenerateLocalIPAddress(bool chooseLocalIPAddress = false)
+        {
+            if (chooseLocalIPAddress)
+            {
+                textBox_localIPAddress.Text = Network.GetLocalIPAddress().ToString();
+                return;
+            }
+            textBox_localIPAddress.Text = Network.GenerateIPAddressString("127.x.x.x");
+        }
+
+        private void GenerateLocalPort()
+        {
+            textBox_localPort.Text = Network.GeneratePort(60000).ToString();
+        }
+
+        private void GenerateRemoteIPAddress()
+        {
+            textBox_remoteIPAddress.Text = Network.GetLocalIPAddress().ToString();
+        }
+
+        private void GenerateUserName()
+        {
+            textBox_userName.Text = string.Format("Anonymous{0}", new Random().Next(1111, 9999));
+        }
+        #endregion
+
         private void button_advancedSettings_Click(object sender, EventArgs e)
         {
             ToggleAdvancedSettings();
@@ -102,64 +118,98 @@ namespace ChatStarterClient
 
         private void button_connect_Click(object sender, EventArgs e)
         {
+            bool inputHasErrors = false;
             IPAddress localIPAddress, remoteIPAddress;
             int localPort, remotePort;
 
-            errorProvider_main.Clear();
+            SetError();
             if (string.IsNullOrWhiteSpace(textBox_userName.Text))
             {
-                errorProvider_main.SetError(textBox_userName, "Empty User Name");
-                return;
+                SetError(label_userName, "Empty User Name");
+                textBox_userName.Focus();
+                textBox_userName.SelectAll();
+                inputHasErrors = true;
             }
-            if (!IPAddress.TryParse(textBox_localIPAddress.Text.Trim(), out localIPAddress))
+            if (!Network.TryParseIPAddress(textBox_localIPAddress.Text, out localIPAddress))
             {
-                errorProvider_main.SetError(textBox_localIPAddress, "Invalid IP Address");
-                return;
+                SetError(label_localIPAddress, "Invalid IP Address");
+                textBox_localIPAddress.Focus();
+                textBox_localIPAddress.SelectAll();
+                inputHasErrors = true;
             }
-            if (!IPAddress.TryParse(textBox_remoteIPAddress.Text.Trim(), out remoteIPAddress))
+            if (!Network.TryParseIPAddress(textBox_remoteIPAddress.Text, out remoteIPAddress))
             {
-                errorProvider_main.SetError(textBox_remoteIPAddress, "Invalid IP Address");
-                return;
+                SetError(label_remoteIPAddress, "Invalid IP Address");
+                textBox_remoteIPAddress.Focus();
+                textBox_remoteIPAddress.SelectAll();
+                inputHasErrors = true;
             }
-            if (!TryParsePort(textBox_localPort.Text.Trim(), out localPort))
+            if (!Network.TryParsePort(textBox_localPort.Text, out localPort))
             {
-                errorProvider_main.SetError(textBox_localPort, "Invalid Port");
-                return;
+                SetError(label_localPort, "Invalid Port");
+                textBox_localPort.Focus();
+                textBox_localPort.SelectAll();
+                inputHasErrors = true;
             }
-            if (!TryParsePort(textBox_remotePort.Text.Trim(), out remotePort))
+            if (!Network.TryParsePort(textBox_remotePort.Text, out remotePort))
             {
-                errorProvider_main.SetError(textBox_remotePort, "Invalid Port");
+                SetError(label_remotePort, "Invalid Port");
+                textBox_remotePort.Focus();
+                textBox_remotePort.SelectAll();
+                inputHasErrors = true;
+            }
+            if (inputHasErrors)
+            {
                 return;
             }
 
-            try
+            SetStatus(Status.Connecting);
+            Task<ChatClient> connectionTask = Task.Factory.StartNew<ChatClient>(() =>
             {
-                SetStatus(Status.Connecting);
                 ChatClient chatClient = new ChatClient(localIPAddress, localPort);
+                chatClient.Connect(remoteIPAddress, remotePort);
+                chatClient.SendText(textBox_userName.Text);
+                return chatClient;
+            });
 
-                Task task = Task.Factory.StartNew(() =>
-                {
-                    chatClient.Connect(remoteIPAddress, remotePort);
-                    chatClient.SendText(textBox_userName.Text);
-                });
-
-                task.ContinueWith(t =>
-                {
-                    Hide();
-                    new Form_Client(chatClient, textBox_userName.Text).Show();
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-            }
-            catch (Exception exception)
+            connectionTask.ContinueWith(task =>
             {
-                MessageBox.Show(exception.Message, Application.ProductName,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                SetStatus(Status.Initial);
-            }
+                if (task.Status == TaskStatus.RanToCompletion)
+                {
+                    ChatClient chatClient = task.Result;
+                    Invoke((MethodInvoker)delegate()
+                    {
+                        Hide();
+                        SetStatus(Status.Initial);
+                        new Form_Client(chatClient, textBox_userName.Text).Show(this);
+                    });
+                }
+                else
+                {
+                    Exception exception = task.Exception.GetBaseException();
+                    Invoke((MethodInvoker)delegate()
+                    {
+                        MessageBox.Show(exception.Message, Application.ProductName,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        SetStatus(Status.Initial);
+                    });
+                }
+            });
         }
 
         private void label_localIPAddress_Click(object sender, EventArgs e)
         {
-            GenerateLocalIPAdress();
+            GenerateLocalIPAddress();
+        }
+
+        private void label_localPort_Click(object sender, EventArgs e)
+        {
+            GenerateLocalPort();
+        }
+
+        private void label_userName_Click(object sender, EventArgs e)
+        {
+            GenerateUserName();
         }
     }
 }

@@ -5,9 +5,9 @@ using System.Net.Sockets;
 
 namespace ChatStarterCommon
 {
-    public class ChatServer
+    public class ChatServer : IDisposable
     {
-        private Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         public List<ChatUser> Users = new List<ChatUser>();
         public IPEndPoint EndPoint
@@ -60,9 +60,26 @@ namespace ChatStarterCommon
 
         public void Stop()
         {
-            if (_socket.Connected)
+            _socket.Close();
+            foreach (ChatUser user in Users)
             {
-                _socket.Disconnect(true);
+                if (user.ClientSocket.GetIsConnected())
+                {
+                    user.ClientSocket.Shutdown(SocketShutdown.Both);
+                    user.ClientSocket.Close();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_socket != null)
+            {
+                _socket.Dispose();
+            }
+            foreach (ChatUser user in Users)
+            {
+                user.ClientSocket.Dispose();
             }
         }
     }

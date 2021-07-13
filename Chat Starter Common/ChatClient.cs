@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using System;
 
 namespace ChatStarterCommon
 {
-    public class ChatClient
+    public class ChatClient : IDisposable
     {
-        private Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         public IPEndPoint LocalEndPoint
         {
@@ -48,11 +49,20 @@ namespace ChatStarterCommon
             return _socket.ReceiveString();
         }
 
-        public void Disconnect()
+        public void Stop()
         {
-            if (_socket.Connected)
+            if (_socket.GetIsConnected())
             {
+                _socket.Shutdown(SocketShutdown.Both);
                 _socket.Disconnect(true);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_socket != null)
+            {
+                _socket.Dispose();
             }
         }
     }

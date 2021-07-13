@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using ChatStarterCommon;
-using System.Threading;
 
 namespace ChatStarterClient
 {
@@ -22,6 +21,7 @@ namespace ChatStarterClient
             ReceiveAsync();
         }
 
+        #region Common Methods
         private void SetStatus(Status status)
         {
             switch (status)
@@ -47,13 +47,31 @@ namespace ChatStarterClient
             {
                 while (true)
                 {
-                    string message = _chatClient.ReceiveText();
-                    Invoke((MethodInvoker)delegate()
+                    try
                     {
-                        Log(message);
-                    });
+                        string message = _chatClient.ReceiveText();
+                        Invoke((MethodInvoker)delegate()
+                        {
+                            Log(message);
+                        });
+                    }
+                    catch
+                    {
+                        break;
+                    }
                 }
+                Invoke((MethodInvoker)delegate()
+                {
+                    Owner.Show();
+                    Close();
+                });
             }).Start();
+        }
+
+        private void Log(string message)
+        {
+            textBox_log.AppendText(message);
+            textBox_log.AppendText(Environment.NewLine);
         }
 
         private void DisplayClientInfos()
@@ -64,12 +82,7 @@ namespace ChatStarterClient
             label_remoteEndPoint.Text = string.Format("{0}:{1}",
                 _chatClient.RemoteEndPoint.Address, _chatClient.RemoteEndPoint.Port);
         }
-
-        private void Log(string message)
-        {
-            textBox_log.AppendText(message);
-            textBox_log.AppendText(Environment.NewLine);
-        }
+        #endregion
 
         private void button_send_Click(object sender, System.EventArgs e)
         {

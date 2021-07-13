@@ -78,11 +78,13 @@
             // 
             this.label_localPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label_localPort.AutoSize = true;
+            this.label_localPort.Cursor = System.Windows.Forms.Cursors.Hand;
             this.label_localPort.Location = new System.Drawing.Point(180, 23);
             this.label_localPort.Name = "label_localPort";
             this.label_localPort.Size = new System.Drawing.Size(31, 13);
             this.label_localPort.TabIndex = 2;
             this.label_localPort.Text = "Port:";
+            this.label_localPort.Click += new System.EventHandler(this.label_localPort_Click);
             // 
             // textBox_localIPAddress
             // 
@@ -147,7 +149,7 @@
             this.textBox_remoteIPAddress.Name = "textBox_remoteIPAddress";
             this.textBox_remoteIPAddress.Size = new System.Drawing.Size(159, 20);
             this.textBox_remoteIPAddress.TabIndex = 1;
-            this.textBox_remoteIPAddress.Text = "127.0.0.1";
+            this.textBox_remoteIPAddress.Text = "127.1.1.1";
             // 
             // label_remoteIPAddress
             // 
@@ -161,11 +163,13 @@
             // label_userName
             // 
             this.label_userName.AutoSize = true;
+            this.label_userName.Cursor = System.Windows.Forms.Cursors.Hand;
             this.label_userName.Location = new System.Drawing.Point(19, 12);
             this.label_userName.Name = "label_userName";
             this.label_userName.Size = new System.Drawing.Size(63, 13);
             this.label_userName.TabIndex = 0;
             this.label_userName.Text = "User Name:";
+            this.label_userName.Click += new System.EventHandler(this.label_userName_Click);
             // 
             // textBox_userName
             // 
