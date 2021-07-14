@@ -61,7 +61,7 @@
             this.statusStrip_main.Location = new System.Drawing.Point(0, 390);
             this.statusStrip_main.Name = "statusStrip_main";
             this.statusStrip_main.ShowItemToolTips = true;
-            this.statusStrip_main.Size = new System.Drawing.Size(484, 22);
+            this.statusStrip_main.Size = new System.Drawing.Size(584, 22);
             this.statusStrip_main.TabIndex = 4;
             // 
             // label_status
@@ -70,7 +70,7 @@
             this.label_status.Image = global::ChatStarterServer.Properties.Resources.bullet_black;
             this.label_status.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label_status.Name = "label_status";
-            this.label_status.Size = new System.Drawing.Size(422, 17);
+            this.label_status.Size = new System.Drawing.Size(553, 17);
             this.label_status.Spring = true;
             this.label_status.Text = "Stopped.";
             this.label_status.ToolTipText = "Server Status";
@@ -95,11 +95,11 @@
             // 
             // textBox_ipAddress
             // 
-            this.textBox_ipAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBox_ipAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_ipAddress.Location = new System.Drawing.Point(18, 39);
             this.textBox_ipAddress.Name = "textBox_ipAddress";
-            this.textBox_ipAddress.Size = new System.Drawing.Size(342, 20);
+            this.textBox_ipAddress.Size = new System.Drawing.Size(442, 20);
             this.textBox_ipAddress.TabIndex = 1;
             this.textBox_ipAddress.Text = "0.0.0.0";
             // 
@@ -108,7 +108,7 @@
             this.label_port.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label_port.AutoSize = true;
             this.label_port.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.label_port.Location = new System.Drawing.Point(363, 23);
+            this.label_port.Location = new System.Drawing.Point(463, 23);
             this.label_port.Name = "label_port";
             this.label_port.Size = new System.Drawing.Size(31, 13);
             this.label_port.TabIndex = 2;
@@ -118,7 +118,7 @@
             // textBox_port
             // 
             this.textBox_port.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_port.Location = new System.Drawing.Point(366, 39);
+            this.textBox_port.Location = new System.Drawing.Point(466, 39);
             this.textBox_port.Name = "textBox_port";
             this.textBox_port.Size = new System.Drawing.Size(70, 20);
             this.textBox_port.TabIndex = 3;
@@ -126,7 +126,7 @@
             // 
             // groupBox_localEndPoint
             // 
-            this.groupBox_localEndPoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox_localEndPoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox_localEndPoint.Controls.Add(this.textBox_port);
             this.groupBox_localEndPoint.Controls.Add(this.label_port);
@@ -134,15 +134,15 @@
             this.groupBox_localEndPoint.Controls.Add(this.label_ipAddress);
             this.groupBox_localEndPoint.Location = new System.Drawing.Point(16, 11);
             this.groupBox_localEndPoint.Name = "groupBox_localEndPoint";
-            this.groupBox_localEndPoint.Size = new System.Drawing.Size(452, 82);
+            this.groupBox_localEndPoint.Size = new System.Drawing.Size(552, 82);
             this.groupBox_localEndPoint.TabIndex = 0;
             this.groupBox_localEndPoint.TabStop = false;
             this.groupBox_localEndPoint.Text = "Local End Point";
             // 
             // groupBox_activity
             // 
-            this.groupBox_activity.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox_activity.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox_activity.Controls.Add(this.listBox_clients);
             this.groupBox_activity.Controls.Add(this.label_log);
@@ -150,25 +150,25 @@
             this.groupBox_activity.Controls.Add(this.label_clients);
             this.groupBox_activity.Location = new System.Drawing.Point(16, 99);
             this.groupBox_activity.Name = "groupBox_activity";
-            this.groupBox_activity.Size = new System.Drawing.Size(452, 252);
+            this.groupBox_activity.Size = new System.Drawing.Size(552, 252);
             this.groupBox_activity.TabIndex = 1;
             this.groupBox_activity.TabStop = false;
             this.groupBox_activity.Text = "Activity";
             // 
             // listBox_clients
             // 
-            this.listBox_clients.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.listBox_clients.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.listBox_clients.FormattingEnabled = true;
             this.listBox_clients.Location = new System.Drawing.Point(19, 35);
             this.listBox_clients.Name = "listBox_clients";
-            this.listBox_clients.Size = new System.Drawing.Size(155, 199);
+            this.listBox_clients.Size = new System.Drawing.Size(187, 199);
             this.listBox_clients.TabIndex = 1;
             // 
             // label_log
             // 
             this.label_log.AutoSize = true;
-            this.label_log.Location = new System.Drawing.Point(180, 19);
+            this.label_log.Location = new System.Drawing.Point(209, 19);
             this.label_log.Name = "label_log";
             this.label_log.Size = new System.Drawing.Size(28, 13);
             this.label_log.TabIndex = 2;
@@ -176,15 +176,15 @@
             // 
             // textBox_log
             // 
-            this.textBox_log.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBox_log.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_log.Location = new System.Drawing.Point(183, 35);
+            this.textBox_log.Location = new System.Drawing.Point(212, 35);
             this.textBox_log.Multiline = true;
             this.textBox_log.Name = "textBox_log";
             this.textBox_log.ReadOnly = true;
             this.textBox_log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_log.Size = new System.Drawing.Size(254, 199);
+            this.textBox_log.Size = new System.Drawing.Size(325, 199);
             this.textBox_log.TabIndex = 3;
             // 
             // label_clients
@@ -207,7 +207,7 @@
             this.button_start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_start.Image = global::ChatStarterServer.Properties.Resources.resultset_next;
             this.button_start.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button_start.Location = new System.Drawing.Point(393, 357);
+            this.button_start.Location = new System.Drawing.Point(493, 357);
             this.button_start.Name = "button_start";
             this.button_start.Size = new System.Drawing.Size(75, 23);
             this.button_start.TabIndex = 2;
@@ -222,7 +222,7 @@
             this.button_stop.Enabled = false;
             this.button_stop.Image = global::ChatStarterServer.Properties.Resources.stop;
             this.button_stop.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button_stop.Location = new System.Drawing.Point(312, 357);
+            this.button_stop.Location = new System.Drawing.Point(412, 357);
             this.button_stop.Name = "button_stop";
             this.button_stop.Size = new System.Drawing.Size(75, 23);
             this.button_stop.TabIndex = 3;
@@ -241,16 +241,17 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button_stop;
-            this.ClientSize = new System.Drawing.Size(484, 412);
+            this.ClientSize = new System.Drawing.Size(584, 412);
             this.Controls.Add(this.statusStrip_main);
             this.Controls.Add(this.groupBox_activity);
             this.Controls.Add(this.groupBox_localEndPoint);
             this.Controls.Add(this.button_stop);
             this.Controls.Add(this.button_start);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Location = new System.Drawing.Point(32, 32);
             this.MinimumSize = new System.Drawing.Size(400, 450);
             this.Name = "Form_Server";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Chat Starter Server";
             this.statusStrip_main.ResumeLayout(false);
             this.statusStrip_main.PerformLayout();

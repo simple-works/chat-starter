@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ChatStarterCommon;
 using ChatStarterServer.Properties;
+using System.Threading;
 
 namespace ChatStarterServer
 {
@@ -12,7 +13,7 @@ namespace ChatStarterServer
     {
         private enum Status { Initial, Listening, Error }
         private ChatServer _chatServer = null;
-        bool _active = false;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         bool _listeningBlinkState = false;
 
         public Form_Server()
@@ -28,13 +29,13 @@ namespace ChatStarterServer
             switch (status)
             {
                 case Status.Initial:
-                    _active = false;
                     Log("Server stopped.");
                     label_status.Text = "Stopped.";
                     label_status.ForeColor = Color.Gray;
                     label_status.Image = Resources.bullet_black;
                     label_localEndPoint.Text = string.Empty;
-                    groupBox_localEndPoint.Enabled = true;
+                    textBox_ipAddress.ReadOnly = true;
+                    textBox_port.ReadOnly = true;
                     listBox_clients.Items.Clear();
                     button_start.Enabled = true;
                     button_stop.Enabled = false;
@@ -42,12 +43,11 @@ namespace ChatStarterServer
                     textBox_ipAddress.Focus();
                     break;
                 case Status.Listening:
-                    _active = true;
-                    Log("Server started listening.");
                     label_status.Text = "Listening...";
                     label_status.ForeColor = Color.Green;
                     label_status.Image = Resources.bullet_green;
-                    groupBox_localEndPoint.Enabled = false;
+                    textBox_ipAddress.ReadOnly = false;
+                    textBox_port.ReadOnly = false;
                     button_start.Enabled = false;
                     button_stop.Enabled = true;
                     timer_listeningBlink.Start();
@@ -63,39 +63,77 @@ namespace ChatStarterServer
             }
         }
 
-        private void ReceiveAsync()
+        private void AcceptUserAndReceiveTextAsync()
         {
             Task.Factory.StartNew(() =>
             {
-                while (_active)
+                Invoke((MethodInvoker)delegate()
                 {
-                    ChatUser user = _chatServer.AcceptUser();
-                    string userNameAndClient = string.Format("{0}@{1}:{2}",
-                            user.Name, user.ClientEndPoint.Address, user.ClientEndPoint.Port);
+                    Log(string.Format("Server started at {0}:{1}.",
+                        _chatServer.EndPoint.Address, _chatServer.EndPoint.Port));
+                    label_localEndPoint.Text = string.Format("{0}:{1}",
+                        _chatServer.EndPoint.Address, _chatServer.EndPoint.Port);
+                    SetStatus(Status.Listening);
+                });
+                try
+                {
+                    while (true)
+                    {
+                        _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                        ChatUser user = _chatServer.AcceptUser();
+                        Invoke((MethodInvoker)delegate()
+                        {
+                            listBox_clients.Items.Add(user);
+                            _chatServer.BroadcastText(string.Format("{0} joined the chat.", user.Name));
+                            Log(string.Format("{0} joined the chat.", user));
+                        });
+                        ReceiveTextAsync(user);
+                    }
+                }
+                catch (Exception exception)
+                {
                     Invoke((MethodInvoker)delegate()
                     {
-                        listBox_clients.Items.Add(userNameAndClient);
-                        _chatServer.BroadcastText(string.Format("{0} joined the chat.", user.Name));
-                        Log(string.Format("{0} joined the chat.", userNameAndClient));
-                    });
-                    Task.Factory.StartNew(() =>
-                    {
-                        while (_active)
-                        {
-                            string message = _chatServer.ReceiveText(user.ID);
-                            _chatServer.BroadcastText(string.Format("{0}: {1}", user.Name, message));
-                            Invoke((MethodInvoker)delegate()
-                            {
-                                Log(string.Format("• {0}: {1}", user.Name, message));
-                            });
-                        }
+                        MessageBox.Show(exception.Message, Application.ProductName,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log(string.Format("Error: {0}", exception.Message));
+                        SetStatus(Status.Initial);
                     });
                 }
-            });
+            }, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
+
+        private void ReceiveTextAsync(ChatUser user)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    while (true)
+                    {
+                        _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                        string message = _chatServer.ReceiveText(user.ID);
+                        _chatServer.BroadcastText(string.Format("{0}: {1}", user.Name, message));
+                        Invoke((MethodInvoker)delegate()
+                        {
+                            Log(string.Format("{0} sent a message: {1}", user, message));
+                        });
+                    }
+                }
+                catch
+                {
+                    Invoke((MethodInvoker)delegate()
+                    {
+                        Log(string.Format("{0} left the chat.", user));
+                        listBox_clients.Items.Remove(user);
+                    });
+                }
+            }, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void Log(string text)
         {
+            textBox_log.AppendText(string.Format("[{0}] ", DateTime.Now.ToString("HH:mm:ss")));
             textBox_log.AppendText(text);
             textBox_log.AppendText(Environment.NewLine);
         }
@@ -155,15 +193,7 @@ namespace ChatStarterServer
             try
             {
                 _chatServer = new ChatServer(ipAddress, port);
-                Log(string.Format("Server created at {0}:{1}.", ipAddress.ToString(), port));
-                label_localEndPoint.Text = string.Format("{0}:{1}",
-                    _chatServer.EndPoint.Address, _chatServer.EndPoint.Port);
-
                 _chatServer.Listen();
-                SetStatus(Status.Listening);
-
-                Log("Server started waiting for requests.");
-                ReceiveAsync();
             }
             catch (Exception exception)
             {
@@ -172,12 +202,16 @@ namespace ChatStarterServer
                 Log(string.Format("Error: {0}", exception.Message));
                 SetStatus(Status.Initial);
             }
+
+            AcceptUserAndReceiveTextAsync();
         }
 
         private void button_stop_Click(object sender, EventArgs e)
         {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
             SetStatus(Status.Initial);
-            _chatServer.Stop();
+            _chatServer.Stop(close: true);
         }
 
         private void timer_listeningBlink_Tick(object sender, EventArgs e)

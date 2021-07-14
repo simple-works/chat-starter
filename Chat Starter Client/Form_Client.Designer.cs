@@ -42,9 +42,9 @@
             // 
             // textBox_message
             // 
-            this.textBox_message.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.textBox_message.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_message.Location = new System.Drawing.Point(12, 355);
+            this.textBox_message.Location = new System.Drawing.Point(12, 205);
             this.textBox_message.Multiline = true;
             this.textBox_message.Name = "textBox_message";
             this.textBox_message.Size = new System.Drawing.Size(279, 20);
@@ -52,14 +52,14 @@
             // 
             // textBox_log
             // 
-            this.textBox_log.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.textBox_log.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_log.Location = new System.Drawing.Point(12, 12);
             this.textBox_log.Multiline = true;
             this.textBox_log.Name = "textBox_log";
             this.textBox_log.ReadOnly = true;
-            this.textBox_log.Size = new System.Drawing.Size(360, 336);
+            this.textBox_log.Size = new System.Drawing.Size(360, 186);
             this.textBox_log.TabIndex = 2;
             // 
             // statusStrip_main
@@ -69,7 +69,7 @@
             this.label_localEndPoint,
             this.label_arrow,
             this.label_remoteEndPoint});
-            this.statusStrip_main.Location = new System.Drawing.Point(0, 390);
+            this.statusStrip_main.Location = new System.Drawing.Point(0, 240);
             this.statusStrip_main.Name = "statusStrip_main";
             this.statusStrip_main.ShowItemToolTips = true;
             this.statusStrip_main.Size = new System.Drawing.Size(384, 22);
@@ -113,7 +113,7 @@
             this.button_send.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_send.Image = global::ChatStarterClient.Properties.Resources.email;
             this.button_send.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button_send.Location = new System.Drawing.Point(297, 354);
+            this.button_send.Location = new System.Drawing.Point(297, 204);
             this.button_send.Name = "button_send";
             this.button_send.Size = new System.Drawing.Size(75, 23);
             this.button_send.TabIndex = 1;
@@ -126,13 +126,13 @@
             this.AcceptButton = this.button_send;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 412);
+            this.ClientSize = new System.Drawing.Size(384, 262);
             this.Controls.Add(this.statusStrip_main);
             this.Controls.Add(this.textBox_log);
             this.Controls.Add(this.textBox_message);
             this.Controls.Add(this.button_send);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(400, 450);
+            this.MinimumSize = new System.Drawing.Size(400, 200);
             this.Name = "Form_Client";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Chat Starter";

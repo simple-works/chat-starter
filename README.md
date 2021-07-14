@@ -19,6 +19,7 @@ Simple 💬 chat application with **💻 Client** and **💻 Server** for Window
 
 ## ✨ Features
 - Multi-client chat.
+- Disconnection detection.
 
 ## :open_file_folder: Project Directory
 

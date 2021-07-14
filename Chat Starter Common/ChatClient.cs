@@ -6,7 +6,7 @@ namespace ChatStarterCommon
 {
     public class ChatClient : IDisposable
     {
-        private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private readonly Socket _socket;
 
         public IPEndPoint LocalEndPoint
         {
@@ -22,21 +22,23 @@ namespace ChatStarterCommon
                 return (_socket.RemoteEndPoint as IPEndPoint);
             }
         }
+        public bool IsConnected
+        {
+            get
+            {
+                return _socket.GetIsConnected();
+            }
+        }
 
         public ChatClient(IPAddress localIPAddress, int localPort)
         {
-            if (!_socket.IsBound)
-            {
-                _socket.Bind(new IPEndPoint(localIPAddress, localPort));
-            }
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _socket.Bind(new IPEndPoint(localIPAddress, localPort));
         }
 
         public void Connect(IPAddress remoteIPAddress, int remotePort)
         {
-            if (!_socket.Connected)
-            {
-                _socket.Connect(new IPEndPoint(remoteIPAddress, remotePort));
-            }
+            _socket.Connect(new IPEndPoint(remoteIPAddress, remotePort));
         }
 
         public void SendText(string text)
@@ -49,8 +51,13 @@ namespace ChatStarterCommon
             return _socket.ReceiveString();
         }
 
-        public void Stop()
+        public void Disconnect(bool close = false)
         {
+            if (close)
+            {
+                Dispose();
+                return;
+            }
             if (_socket.GetIsConnected())
             {
                 _socket.Shutdown(SocketShutdown.Both);
@@ -60,9 +67,15 @@ namespace ChatStarterCommon
 
         public void Dispose()
         {
-            if (_socket != null)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                _socket.Dispose();
+                _socket.Close();
             }
         }
     }

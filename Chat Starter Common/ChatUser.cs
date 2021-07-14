@@ -26,10 +26,26 @@ namespace ChatStarterCommon
 
         public void Dispose()
         {
-            if (ClientSocket != null)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                ClientSocket.Dispose();
+                if (ClientSocket != null)
+                {
+                    ClientSocket.Close();
+                }
             }
+            ID = default(Guid);
+            Name = default(string);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}@{1}:{2}", Name, ClientEndPoint.Address, ClientEndPoint.Port);
         }
     }
 }

@@ -7,9 +7,9 @@ namespace ChatStarterCommon
 {
     public class ChatServer : IDisposable
     {
-        private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private readonly Socket _socket;
 
-        public List<ChatUser> Users = new List<ChatUser>();
+        public List<ChatUser> Users { get; private set; }
         public IPEndPoint EndPoint
         {
             get
@@ -20,10 +20,9 @@ namespace ChatStarterCommon
 
         public ChatServer(IPAddress localIPAddress, int localPort)
         {
-            if (!_socket.IsBound)
-            {
-                _socket.Bind(new IPEndPoint(localIPAddress, localPort));
-            }
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _socket.Bind(new IPEndPoint(localIPAddress, localPort));
+            Users = new List<ChatUser>();
         }
 
         public void Listen()
@@ -58,8 +57,13 @@ namespace ChatStarterCommon
             }
         }
 
-        public void Stop()
+        public void Stop(bool close = false)
         {
+            if (close)
+            {
+                Dispose();
+                return;
+            }
             _socket.Close();
             foreach (ChatUser user in Users)
             {
@@ -73,13 +77,22 @@ namespace ChatStarterCommon
 
         public void Dispose()
         {
-            if (_socket != null)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                _socket.Dispose();
-            }
-            foreach (ChatUser user in Users)
-            {
-                user.ClientSocket.Dispose();
+                if (_socket != null)
+                {
+                    _socket.Close();
+                }
+                foreach (ChatUser user in Users)
+                {
+                    user.ClientSocket.Close();
+                }
             }
         }
     }

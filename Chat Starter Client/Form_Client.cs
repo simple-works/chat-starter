@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows.Forms;
 using ChatStarterCommon;
+using System.Threading.Tasks;
 
 namespace ChatStarterClient
 {
@@ -11,14 +12,17 @@ namespace ChatStarterClient
         private ChatClient _chatClient;
         private string _userName;
 
-        public Form_Client(ChatClient chatClient, string userName)
+        public Form_Client()
         {
             InitializeComponent();
-            _chatClient = chatClient;
-            _userName = userName;
-            DisplayClientInfos();
-            SetStatus(Status.Initial);
-            ReceiveAsync();
+            if (Form_Connection.ShowAndTryGetInput(out _chatClient, out _userName, this))
+            {
+                SetStatus(Status.Initial);
+                DisplayClientInfos();
+                ReceiveTextAsync();
+                return;
+            }
+            Load += (s, e) => Close();
         }
 
         #region Common Methods
@@ -41,13 +45,13 @@ namespace ChatStarterClient
             }
         }
 
-        private void ReceiveAsync()
+        private void ReceiveTextAsync()
         {
-            new Thread(() =>
+            Task.Factory.StartNew(() =>
             {
-                while (true)
+                try
                 {
-                    try
+                    while (true)
                     {
                         string message = _chatClient.ReceiveText();
                         Invoke((MethodInvoker)delegate()
@@ -55,21 +59,24 @@ namespace ChatStarterClient
                             Log(message);
                         });
                     }
-                    catch
-                    {
-                        break;
-                    }
                 }
-                Invoke((MethodInvoker)delegate()
+                catch (Exception exception)
                 {
-                    Owner.Show();
-                    Close();
-                });
-            }).Start();
+                    Invoke((MethodInvoker)delegate()
+                    {
+                        MessageBox.Show(exception.Message, Application.ProductName,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _chatClient.Disconnect(true);
+                        if (Owner != null) Owner.Show();
+                        Close();
+                    });
+                }
+            });
         }
 
         private void Log(string message)
         {
+            textBox_log.AppendText(string.Format("[{0}] ", DateTime.Now.ToString("HH:mm:ss")));
             textBox_log.AppendText(message);
             textBox_log.AppendText(Environment.NewLine);
         }
