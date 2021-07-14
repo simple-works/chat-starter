@@ -18,8 +18,11 @@ Simple 💬 chat application with **💻 Client** and **💻 Server** for Window
 ![Screenshot 2](screenshot_2.gif?raw=true)
 
 ## ✨ Features
+- Simple GUI and API.
+- Multi-server chat.
 - Multi-client chat.
 - Disconnection detection.
+- Random endpoint generation.
 
 ## :open_file_folder: Project Directory
 
